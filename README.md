@@ -1,8 +1,8 @@
-# 🛒 ShopJS v2 - Backend API
+# ShopJS v2 - Backend API
 
 Une API REST complète pour une application e-commerce développée avec Node.js, Express et MongoDB.
 
-## 📋 Description
+## Description
 
 Cette API backend fournit toutes les fonctionnalités nécessaires pour une boutique en ligne moderne :
 
@@ -11,7 +11,7 @@ Cette API backend fournit toutes les fonctionnalités nécessaires pour une bout
 - Gestion des commandes et du panier
 - Interface d'administration pour le suivi des commandes
 
-## 🚀 Technologies utilisées
+## Technologies utilisées
 
 - **Backend** : Node.js, Express.js
 - **Base de données** : MongoDB avec Mongoose
@@ -19,7 +19,7 @@ Cette API backend fournit toutes les fonctionnalités nécessaires pour une bout
 - **Configuration** : Variables d'environnement (dotenv)
 - **Autres** : CORS pour l'intégration frontend
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 ├── index.js                # Point d'entrée du serveur
@@ -40,7 +40,7 @@ Cette API backend fournit toutes les fonctionnalités nécessaires pour une bout
 └── .env                    # Variables d'environnement (local, ignoré par git)
 ```
 
-## 🔧 Installation et configuration
+## Installation et configuration
 
 ### Prérequis
 
@@ -85,7 +85,7 @@ yarn start
 
 Le serveur démarre sur le port configuré dans `.env` (4000 par défaut).
 
-## ⚙️ Configuration des variables d'environnement
+## Configuration des variables d'environnement
 
 ### Fichier `.env` (développement local)
 
@@ -107,7 +107,7 @@ NODE_ENV=production
 # PORT est géré automatiquement par Northflank
 ```
 
-## 🛠️ Initialisation de la base de données
+## Initialisation de la base de données
 
 Pour peupler la base de données avec des produits de démonstration :
 
@@ -117,7 +117,7 @@ POST /create-db
 
 Cette route supprime tous les produits existants et les remplace par les données du fichier `assets/products.json`.
 
-## 🌐 API en production
+## API en production
 
 **URL de l'API déployée :** https://site--shopjsv2-backend-api--sf5bwjrkc9fw.code.run/
 
@@ -131,7 +131,7 @@ GET https://site--shopjsv2-backend-api--sf5bwjrkc9fw.code.run/
 GET https://site--shopjsv2-backend-api--sf5bwjrkc9fw.code.run/products
 ```
 
-## 📜 Scripts disponibles
+## Scripts disponibles
 
 ```bash
 # Démarrage en développement
@@ -144,9 +144,9 @@ yarn start
 yarn test
 ```
 
-## 📚 Documentation de l'API
+## Documentation de l'API
 
-### 🏠 Route de bienvenue
+### Route de bienvenue
 
 #### Statut de l'API
 
@@ -172,7 +172,7 @@ GET /
 }
 ```
 
-### 👤 Authentification
+### Authentification
 
 #### Inscription
 
@@ -199,7 +199,7 @@ Content-Type: application/json
 }
 ```
 
-### 🛍️ Produits
+### Produits
 
 #### Récupérer tous les produits
 
@@ -219,7 +219,7 @@ GET /products/:id
 POST /create-db
 ```
 
-### 📦 Commandes
+### Commandes
 
 > **Note** : Toutes les routes de commandes nécessitent une authentification (Bearer Token)
 
@@ -256,14 +256,14 @@ PUT /orders/mark-delivered/:id
 Authorization: Bearer <admin_token>
 ```
 
-## 🔐 Authentification et sécurité
+## Authentification et sécurité
 
 - **Chiffrement des mots de passe** : SHA256 avec salt unique
 - **Tokens JWT** : Génération automatique pour l'authentification
 - **Middlewares de sécurité** : Vérification d'authentification et de droits admin
 - **CORS** : Configuré pour permettre les requêtes cross-origin
 
-## 👥 Modèles de données
+## Modèles de données
 
 ### User
 
@@ -288,11 +288,11 @@ Authorization: Bearer <admin_token>
 - `price` : Prix total
 - `delivered` : Statut de livraison
 
-## 🌐 CORS
+## CORS
 
 L'API est configurée avec CORS pour permettre les requêtes depuis n'importe quel domaine. En production, il est recommandé de restreindre les origines autorisées.
 
-## 📝 Développement
+## Développement
 
 ### Gestion des erreurs
 
@@ -321,7 +321,7 @@ L'API retourne des erreurs au format JSON :
 - Testez avec Postman ou curl
 - Vérifiez les logs en cas d'erreur
 
-## 🚀 Déploiement sur Northflank
+## Déploiement sur Northflank
 
 ### Étapes de déploiement
 
