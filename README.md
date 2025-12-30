@@ -1,350 +1,134 @@
-# ShopJS v2 - Backend API
+# ShopJS v2 Backend API
 
-Une API REST complète pour une application e-commerce développée avec Node.js, Express et MongoDB.
+REST API for the ShopJS v2 e-commerce project, built with Node.js, Express, and MongoDB.
 
-## Description
+## Overview
 
-Cette API backend fournit toutes les fonctionnalités nécessaires pour une boutique en ligne moderne :
+This API provides:
 
-- Gestion des utilisateurs avec authentification sécurisée
-- Catalogue de produits avec système de recherche
-- Gestion des commandes et du panier
-- Interface d'administration pour le suivi des commandes
+- User signup/login (token-based authentication)
+- Products catalog (with a basic search)
+- Orders creation and administration
 
-## Technologies utilisées
+## Tech stack
 
-- **Backend** : Node.js, Express.js
-- **Base de données** : MongoDB avec Mongoose
-- **Authentification** : JWT avec chiffrement sécurisé (crypto-js, uid2)
-- **Configuration** : Variables d'environnement (dotenv)
-- **Autres** : CORS pour l'intégration frontend
+- Node.js, Express
+- MongoDB, Mongoose
+- dotenv (environment variables)
+- cors (CORS policy)
+- crypto-js + uid2 (password hashing + token generation)
 
-## Structure du projet
+## Project structure
 
 ```
-├── index.js                # Point d'entrée du serveur
-├── models/                 # Modèles de données MongoDB
-│   ├── User.js             # Modèle utilisateur
-│   ├── Product.js          # Modèle produit
-│   └── Order.js            # Modèle commande
-├── routes/                 # Routes de l'API
-│   ├── user.js             # Authentification utilisateur
-│   ├── product.js          # Gestion des produits
-│   └── order.js            # Gestion des commandes
-├── middlewares/            # Middlewares de sécurité
-│   ├── isAuthenticated.js  # Vérification de l'authentification
-│   └── isAdmin.js          # Vérification des droits admin
-├── assets/
-│   └── products.json       # Données de produits pour l'initialisation
-├── .env.example            # Template des variables d'environnement
-└── .env                    # Variables d'environnement (local, ignoré par git)
+index.js                # Server entrypoint
+models/                 # Mongoose models
+routes/                 # API routes
+middlewares/            # Auth / admin middlewares
+assets/products.json    # Seed data (development only)
+.env.example            # Environment variables template
 ```
 
-## Installation et configuration
+## Requirements
 
-### Prérequis
+- Node.js 18+
+- MongoDB (local or MongoDB Atlas)
+- Yarn or npm
 
-- Node.js (v14 ou supérieur)
-- MongoDB (local ou MongoDB Atlas)
-- Yarn (recommandé) ou npm
+## Getting started (local)
 
-### Installation
-
-1. Clonez le dépôt
-
-```bash
-git clone <votre-repo>
-cd Shopjsv2-Backend
-```
-
-2. Installez les dépendances
+Install dependencies:
 
 ```bash
 yarn install
 ```
 
-3. Configurez les variables d'environnement
+Create your local env file:
 
 ```bash
-# Copiez le template
 cp .env.example .env
-
-# Éditez .env avec vos valeurs
-vim .env
 ```
 
-4. Démarrez le serveur
+Start the server:
 
 ```bash
-# Développement
 yarn dev
-
-# Production
-yarn start
 ```
 
-Le serveur démarre sur le port configuré dans `.env` (4000 par défaut).
+Default local URL: `http://localhost:4000`.
 
-## Configuration des variables d'environnement
+## Environment variables
 
-### Fichier `.env` (développement local)
+The server uses these variables:
 
-```bash
-# Configuration de la base de données
-MONGODB_URI=mongodb://localhost:27017/shopjsv2
+- `MONGODB_URI` (required): MongoDB connection string
+- `NODE_ENV` (optional): `development` (default) or `production`
+- `PORT` (optional): defaults to `4000` (local)
+- `CORS_ORIGINS` (production required): comma-separated list of allowed origins
 
-# Configuration du serveur
-PORT=4000
+Example (local):
+
+```dotenv
+MONGODB_URI=mongodb://localhost:27017/DATABASE_NAME
 NODE_ENV=development
+PORT=4000
+CORS_ORIGINS=http://localhost:3000
 ```
 
-### Variables pour la production (Northflank)
+Example (production):
 
-```bash
-# Dans l'interface Northflank, configurez :
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/shopjsv2-backend
+```dotenv
+MONGODB_URI=mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/DATABASE_NAME
 NODE_ENV=production
-# PORT est géré automatiquement par Northflank
+CORS_ORIGINS=https://{YOUR_DEPLOYED_URL}
 ```
 
-## Initialisation de la base de données
+## API endpoints
 
-Pour peupler la base de données avec des produits de démonstration :
+Health:
 
-```bash
-POST /create-db
-```
+- `GET /` returns a JSON status payload
 
-Cette route supprime tous les produits existants et les remplace par les données du fichier `assets/products.json`.
+Auth:
 
-## API en production
+- `POST /user/signup`
+- `POST /user/login`
 
-**URL de l'API déployée :** https://site--shopjsv2-backend-api--sf5bwjrkc9fw.code.run/
+Products:
 
-### Test rapide
+- `GET /products?search=term`
+- `GET /products/:id`
 
-```bash
-# Vérification du statut
-GET https://site--shopjsv2-backend-api--sf5bwjrkc9fw.code.run/
+Orders (requires `Authorization: Bearer <token>`):
 
-# Récupérer les produits
-GET https://site--shopjsv2-backend-api--sf5bwjrkc9fw.code.run/products
-```
+- `POST /orders` (authenticated users)
+- `GET /orders` (admin only)
+- `PUT /orders/mark-delivered/:id` (admin only)
 
-## Scripts disponibles
+Development-only seed route:
 
-```bash
-# Démarrage en développement
-yarn dev
+- `POST /create-db` resets the products collection using `assets/products.json`
+- Disabled in production (returns `404`)
 
-# Démarrage en production
-yarn start
+## Notes for a public deployment
 
-# Tests (non configurés)
-yarn test
-```
+- The `/create-db` route is intentionally disabled in production.
+- The `GET /orders` response only populates safe owner fields (no token/hash/salt/email).
 
-## Documentation de l'API
+## Security notes
 
-### Route de bienvenue
+This project is educational. Passwords are hashed using SHA256 + a per-user salt. For production-grade systems, use a dedicated password hashing algorithm such as bcrypt or argon2.
 
-#### Statut de l'API
+## Deployment notes (Northflank)
 
-```
-GET /
-```
+On Northflank, define environment variables in the UI:
 
-**Réponse :**
+- `MONGODB_URI` (your MongoDB Atlas URL)
+- `NODE_ENV=production`
+- `CORS_ORIGINS` (your frontend origin, for example `https://{YOUR_DEPLOYED_URL}`)
 
-```json
-{
-  "name": "🛒 ShopJS v2 - Backend API",
-  "version": "1.0.0",
-  "status": "✅ Running",
-  "environment": "production",
-  "endpoints": {
-    "products": "/products",
-    "auth": "/user/signup, /user/login",
-    "orders": "/orders",
-    "init": "POST /create-db"
-  },
-  "database": "Connected"
-}
-```
+Northflank manages `PORT` automatically.
 
-### Authentification
+## Links
 
-#### Inscription
-
-```
-POST /user/signup
-Content-Type: application/json
-
-{
-  "username": "string",
-  "email": "string",
-  "password": "string"
-}
-```
-
-#### Connexion
-
-```
-POST /user/login
-Content-Type: application/json
-
-{
-  "email": "string",
-  "password": "string"
-}
-```
-
-### Produits
-
-#### Récupérer tous les produits
-
-```
-GET /products?search=terme_recherche
-```
-
-#### Récupérer un produit par ID
-
-```
-GET /products/:id
-```
-
-#### Initialiser la base de données
-
-```
-POST /create-db
-```
-
-### Commandes
-
-> **Note** : Toutes les routes de commandes nécessitent une authentification (Bearer Token)
-
-#### Créer une commande
-
-```
-POST /orders
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "products": [
-    {
-      "product": "product_id",
-      "quantity": number
-    }
-  ],
-  "address": "string",
-  "price": number
-}
-```
-
-#### Récupérer toutes les commandes (Admin uniquement)
-
-```
-GET /orders
-Authorization: Bearer <admin_token>
-```
-
-#### Marquer une commande comme livrée (Admin uniquement)
-
-```
-PUT /orders/mark-delivered/:id
-Authorization: Bearer <admin_token>
-```
-
-## Authentification et sécurité
-
-- **Chiffrement des mots de passe** : SHA256 avec salt unique
-- **Tokens JWT** : Génération automatique pour l'authentification
-- **Middlewares de sécurité** : Vérification d'authentification et de droits admin
-- **CORS** : Configuré pour permettre les requêtes cross-origin
-
-## Modèles de données
-
-### User
-
-- `username` : Nom d'utilisateur
-- `email` : Adresse email (unique)
-- `token` : Token d'authentification
-- `admin` : Droits administrateur (booléen)
-- `hash` / `salt` : Données de chiffrement du mot de passe
-
-### Product
-
-- Informations complètes du produit (titre, description, prix, etc.)
-- Images et miniatures
-- Système de reviews et ratings
-- Informations logistiques (stock, expédition, garantie)
-
-### Order
-
-- `owner` : Référence vers l'utilisateur
-- `products` : Liste des produits avec quantités
-- `address` : Adresse de livraison
-- `price` : Prix total
-- `delivered` : Statut de livraison
-
-## CORS
-
-L'API est configurée avec CORS pour permettre les requêtes depuis n'importe quel domaine. En production, il est recommandé de restreindre les origines autorisées.
-
-## Développement
-
-### Gestion des erreurs
-
-L'API retourne des erreurs au format JSON :
-
-```json
-{
-  "message": "Description de l'erreur"
-}
-```
-
-### Logs informatifs
-
-```bash
-🚀 Serveur démarré sur le port 4000
-📍 Environnement: development
-🌐 URL locale: http://localhost:4000
-✅ MongoDB connecté avec succès
-📍 Database: shopjsv2
-```
-
-### Bonnes pratiques
-
-- Utilisez `.env` pour la configuration locale
-- Ne commitez jamais le fichier `.env`
-- Testez avec Postman ou curl
-- Vérifiez les logs en cas d'erreur
-
-## Déploiement sur Northflank
-
-### Étapes de déploiement
-
-1. **Créer un projet** sur [Northflank](https://northflank.com)
-2. **Créer un service** depuis un dépôt Git
-3. **Connecter le dépôt** GitHub
-4. **Configurer les variables d'environnement** :
-   ```
-   MONGODB_URI=mongodb+srv://...
-   NODE_ENV=production
-   ```
-5. **Déployer** : Northflank utilisera automatiquement `yarn start`
-
-### Configuration automatique
-
-- **Port** : Géré automatiquement par Northflank
-- **Build** : Détection automatique de `package.json`
-- **Start** : Utilise le script `yarn start`
-- **SSL** : HTTPS activé par défaut
-
-### Variables d'environnement requises
-
-```bash
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/shopjsv2-backend
-NODE_ENV=production
-```
+- Frontend: [ShopJS v2 Frontend](https://shopjsv2-frontend.vercel.app)

@@ -5,6 +5,11 @@ const router = express.Router();
 
 router.post("/create-db", async (req, res) => {
   try {
+    // Public-safe: never expose destructive seed route in production
+    if (process.env.NODE_ENV === "production") {
+      return res.status(404).json({ message: "This route does not exist" });
+    }
+
     await Product.deleteMany();
     await Product.insertMany(data);
     res.status(201).json({ message: "DB created" });

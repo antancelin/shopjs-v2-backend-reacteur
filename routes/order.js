@@ -41,7 +41,12 @@ router.get("/orders", isAuthenticated, isAdmin, async (req, res) => {
   try {
     console.log("orders");
 
-    const orders = await Order.find().populate("owner");
+    // Public-safe: never leak sensitive user fields (token/hash/salt/email)
+    // Only expose what's needed for admin UI
+    const orders = await Order.find().populate({
+      path: "owner",
+      select: "_id username admin",
+    });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
